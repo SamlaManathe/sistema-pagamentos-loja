@@ -2,9 +2,9 @@
 using sistema_pagamentos_loja.Entity;
 using System.Runtime.Intrinsics.X86;
 
-int opcao;
-
 List<Venda> vendas = new List<Venda>();
+
+int opcao;
 
 do
 {
