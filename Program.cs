@@ -1,6 +1,6 @@
 ﻿
 using sistema_pagamentos_loja.Entity;
-using System.Runtime.Intrinsics.X86;
+using sistema_pagamentos_loja.Pagamentos;
 
 List<Venda> vendas = new List<Venda>();
 
@@ -31,9 +31,12 @@ do
     {
         case 1:
 
-            Console.WriteLine("\n=========== Cadastro ===========\n");
-
-            Console.Write("Número: ");
+            Console.Write(
+                "\n================================\n" +
+                        "\tCadastro de venda" +
+                "\n================================\n"
+            );
+            Console.Write("\nNúmero: ");
             if (!int.TryParse(Console.ReadLine(), out int numero))
             {
                 Console.WriteLine("\nEntrada inválida, insira um número inteiro!");
@@ -79,12 +82,118 @@ do
             break;
 
         case 2:
+            Console.Write(
+                "\n================================\n" +
+                        "\tConsulta de vendas" +
+                "\n================================\n"
+            );
+
+            foreach (Venda venda in vendas)
+            {
+                Console.WriteLine(
+                    $"\nVenda: {venda.Numero}" +
+                    $"\nCliente: {venda.Cliente.Nome}" +
+                    $"\nValor original: R${venda.ValorCompra}" +
+                    $"\nSituação: {venda.Situacao}"
+                );
+
+                if(venda.Situacao == "Pago")
+                {
+                    Console.WriteLine(
+                        $"\nForma de pagamento: {venda.FormaPagamento}" +
+                        $"\nValor final: R${venda.ValorFinal}"
+                    );
+                }
+            }
+
             break;
 
         case 3:
+            Console.Write(
+                "\n================================\n" +
+                        "\tRealizar pagamento" +
+                "\n================================\n"
+            );
+
+            Console.Write("\nNúmero: ");
+            if (!int.TryParse(Console.ReadLine(), out numero))
+            {
+                Console.WriteLine("\nEntrada inválida, insira um número inteiro!");
+                continue;
+            }
+
+            Venda? vendaEncontrada = vendas.FirstOrDefault(v => v.Numero == numero);
+
+            if (vendaEncontrada == null)
+            {
+                Console.WriteLine("\nA venda não foi encontrada.");
+                continue;
+            }
+
+            Console.Write(
+                "\nEscolha a forma de pagamento:\n" +
+
+                "\n1 - PIX" +
+                "\n2 - Cartão de crédito" +
+                "\n3 - Dinheiro\n" +
+
+                "\nOpção: "
+            );
+
+            if (!int.TryParse(Console.ReadLine(), out int opcaoPagamento))
+            {
+                Console.WriteLine("\nEntrada inválida, insira um número inteiro!");
+                continue;
+            }
+
+            FormaPagamento? formaPagamento = null;
+
+            switch (opcaoPagamento)
+            {
+                case 1:
+
+                    formaPagamento = new PagamentoPix();
+                    break;
+
+                case 2:
+                    formaPagamento = new PagamentoCartao();
+                    break;
+
+                case 3:
+                    formaPagamento = new PagamentoDinheiro();
+                    break;
+
+                default:
+                    Console.WriteLine("\nOpção inválida!");
+                    break;
+            }
+
+            if (formaPagamento == null)
+            {
+                continue;
+            }
+
+            try
+            {
+                vendaEncontrada.RealizarPagamento(formaPagamento);
+
+                Console.WriteLine(
+                    $"\nValor original: R${vendaEncontrada.ValorCompra}" +
+                    $"\nForma de pagamento: {vendaEncontrada.FormaPagamento}" +
+                    $"\nValor final: R${vendaEncontrada.ValorFinal}\n" +
+
+                    $"\nPagamento de R${vendaEncontrada.ValorFinal} realizado com sucesso!"
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"\nErro: {ex.Message}");
+            }
+
             break;
 
         case 0:
+            Console.WriteLine("\nSaindo...");
             break;
 
         default:

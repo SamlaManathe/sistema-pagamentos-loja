@@ -9,6 +9,8 @@ namespace sistema_pagamentos_loja.Entity
         public Cliente Cliente { get; }
         public decimal ValorCompra { get; }
         public string Situacao { get; private set; }
+        public decimal? ValorFinal { get; private set; }
+        public string? FormaPagamento { get; private set; }
 
         public Venda(int numero, Cliente cliente, decimal valorCompra)
         {
@@ -21,6 +23,18 @@ namespace sistema_pagamentos_loja.Entity
             Cliente = cliente;
             ValorCompra = valorCompra;
             Situacao = "Pendente";
+        }
+
+        public void RealizarPagamento(FormaPagamento formaPagamento)
+        {
+            if (Situacao == "Pago")
+            {
+                throw new ArgumentException("Esta venda já foi paga.");
+            }
+
+            ValorFinal = formaPagamento.CalcularValorFinal(ValorCompra);
+            FormaPagamento = formaPagamento.Nome;
+            Situacao = "Pago";
         }
     }
 }
