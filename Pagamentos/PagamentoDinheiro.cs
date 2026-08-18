@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 namespace sistema_pagamentos_loja.Pagamentos
 {
-    internal class PagamentoDinheiro
+    internal class PagamentoDinheiro : FormaPagamento
     {
+        public override decimal CalcularValorFinal(decimal valorCompra)
+        {
+            return valorCompra;
+        }
     }
 }
